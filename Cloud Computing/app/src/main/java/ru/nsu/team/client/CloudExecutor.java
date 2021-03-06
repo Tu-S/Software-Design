@@ -14,7 +14,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CloudExecutor {
 
@@ -24,19 +26,23 @@ public class CloudExecutor {
     private CloudExecutor() {
     }
 
-    public static void Init(String host, int port) throws IOException {
+    public static void init(String host, int port) throws IOException {
         CloudExecutor.host = host;
         CloudExecutor.port = port;
     }
 
-    public static <TIn extends Serializable, TOperation extends CloudOperation<TIn, TOut>, TOut extends Serializable> TOut Execute(TIn data, Class<TIn> inClass, Class<TOperation> operationClass, Class<TOut> outClass) throws ClassNotFoundException, IOException {
+    public static <TIn extends Serializable, TOperation extends CloudOperation<TIn, TOut>, TOut extends Serializable> TOut execute(TIn data, Class<TIn> inClass, Class<TOperation> operationClass, Class<TOut> outClass) throws ClassNotFoundException, IOException {
 
         var request = new PackageToServer(Agent.loadedClasses, Toolkit.Encode(operationClass), Toolkit.Encode(inClass), Toolkit.Encode(data), true);
 
-        return CloudExecutor.<PackageToServer, TOut>ServerExchange(request, outClass);
+        return CloudExecutor.<PackageToServer, TOut>serverExchange(request, outClass);
     }
 
-    public static <TIn extends Serializable, TOperation extends CloudMapOperation<TIn, TOut>, TOut extends Serializable> Callable<? extends List<TOut>> Execute(Collection<TIn> data, Class<TOperation> operationClass, int executorsCount) {
+    public static <TIn, R> Stream<R> cloudMap(Collection<TIn> data, Function<? super TIn,? extends R> mapper){
+            return  data.stream().map(mapper);
+    }
+
+    public static <TIn extends Serializable, TOperation extends CloudMapOperation<TIn, TOut>, TOut extends Serializable> Callable<? extends List<TOut>> execute(Collection<TIn> data, Class<TOperation> operationClass, int executorsCount) {
         var chunks = new LinkedList<ArrayList<TIn>>();
         var chunkSize = data.size() / executorsCount + ((data.size() % executorsCount) == 0 ? 0 : 1);
         var dataList = new ArrayList<>(data);
@@ -49,7 +55,7 @@ public class CloudExecutor {
     }
 
 
-    private static <TRequest extends Serializable, TResponse extends Serializable> TResponse ServerExchange(TRequest request, Class<TResponse> responseClass) throws IOException, ClassNotFoundException {
+    private static <TRequest extends Serializable, TResponse extends Serializable> TResponse serverExchange(TRequest request, Class<TResponse> responseClass) throws IOException, ClassNotFoundException {
         var socket = new Socket(host, port);
         var outputStream = new DataOutputStream(socket.getOutputStream());
         var inputStream = new DataInputStream(socket.getInputStream());
@@ -87,7 +93,7 @@ public class CloudExecutor {
 
         @Override
         public TOut call() throws Exception {
-            return CloudExecutor.<TIn, TOperation, TOut>Execute(data, inClass, operationClass, outClass);
+            return CloudExecutor.<TIn, TOperation, TOut>execute(data, inClass, operationClass, outClass);
         }
     }
 }
