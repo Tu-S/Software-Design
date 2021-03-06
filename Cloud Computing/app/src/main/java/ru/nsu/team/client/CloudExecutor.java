@@ -39,8 +39,7 @@ public class CloudExecutor {
     }
 
     public static <TIn, R> Stream<R> cloudMap(Collection<TIn> data, Function<? super TIn,? extends R> mapper){
-
-            System.out.println(mapper.getClass());
+            System.out.println("in cloud map " + mapper.getClass());
             return  data.stream().map(mapper);
     }
 

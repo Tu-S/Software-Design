@@ -5,6 +5,7 @@ import ru.nsu.team.client.CloudExecutor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TestCloud {
@@ -20,7 +21,7 @@ public class TestCloud {
         }
         //list.stream().map(MyFunc::method).forEach(System.out::println);
         MyFunc f = new MyFunc();
-        var res = CloudExecutor.cloudMap(list,MyFunc::method);
+        var res = CloudExecutor.cloudMap(list,MyFunc::staticMethod);
         for(Integer i : res.collect(Collectors.toCollection(ArrayList::new))){
             System.out.println(i);
         }
