@@ -1,15 +1,16 @@
 package ru.nsu.team.test;
 
-import java.util.function.Function;
-
 public class MyFunc {
-    public static  <Tin> Tin staticMethod(Tin arg){
+    public static  <TIn, TOut> TOut staticMethod(TIn arg){
         System.out.println("static " + arg);
-        return arg;
+        Integer a = (Integer) arg;
+        a++;
+        return (TOut) Integer.toString(a);
     }
 
-    public <Tin> Tin nonStaticMethod(Tin arg){
+    public <TIn, TOut> TOut nonStaticMethod(TIn arg){
         System.out.println("non static" + arg);
-        return arg;
+
+        return (TOut) arg;
     }
 }

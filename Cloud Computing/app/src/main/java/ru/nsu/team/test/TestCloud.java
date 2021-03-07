@@ -22,7 +22,7 @@ public class TestCloud {
         //list.stream().map(MyFunc::method).forEach(System.out::println);
         MyFunc f = new MyFunc();
         var res = CloudExecutor.cloudMap(list,MyFunc::staticMethod);
-        for(Integer i : res.collect(Collectors.toCollection(ArrayList::new))){
+        for(Object i : res.collect(Collectors.toCollection(ArrayList::new))){
             System.out.println(i);
         }
         /*var result = CloudExecutor.execute(source, Integer[].class, TestOperation.class, String[].class);
