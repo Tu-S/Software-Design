@@ -6,10 +6,10 @@ import my.java.mpi.client.AJavaMpiOperation;
 public class TestMapOperation /*extends AJavaMpiOperation<Integer[], Integer[]>*/ {
     //@Override
     @Remote
-    public Integer[] Execute(Integer[] input) {
+    public Integer[] Execute(String[] input) {
         var ans = new Integer[input.length];
         for (int i = 0; i < input.length; i++) {
-            ans[i] = i*2;
+            ans[i] = Integer.parseInt(input[i])*3;
         }
         return ans;
     }

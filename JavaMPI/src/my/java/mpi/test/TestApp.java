@@ -13,9 +13,9 @@ import java.util.concurrent.Executors;
 public class TestApp {
     public static void main(String[] args) throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
         JavaMpi.Init("localhost", 18228);
-        var source = new Integer[10];
+        var source = new String[10];
         for (int i = 0; i < source.length; i++) {
-            source[i] = i;
+            source[i] = Integer.toString(i);
         }
         JavaMpi.testExecute(source,TestMapOperation.class).forEach(System.out::println);
         //var result = JavaMpi.Execute(source, Integer[].class, TestMapOperation.class, String[].class);
