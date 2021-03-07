@@ -51,7 +51,7 @@ public class CloudExecutor {
         System.out.println("out array class = " + outArr.getClass().getSimpleName());
         var wtf = new Integer[10];
         execute(wtf,inArr.getClass(),TestOperation.class,outArr.getClass());
-
+        //Sergey's test version
         return data.stream().map(mapper);
     }
 
