@@ -3,21 +3,22 @@ package my.java.mpi.test;
 import my.java.mpi.client.JavaMpi;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class TestApp {
     public static void main(String[] args) throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
         JavaMpi.Init("localhost", 18228);
-        var source = new String[10];
+        var source = new Person[10];
         for (int i = 0; i < source.length; i++) {
-            source[i] = Integer.toString(i);
+            source[i] = new Person(i,"person name " + i);
         }
-        JavaMpi.testExecute(source,TestMapOperation.class).forEach(System.out::println);
+        List<Person> persons = (ArrayList<Person>)JavaMpi.testExecute(source,TestMapOperation.class).collect(Collectors.toCollection(ArrayList::new));
+        for (Person p : persons){
+            System.out.println(p.name);
+        }
         //var result = JavaMpi.Execute(source, Integer[].class, TestMapOperation.class, String[].class);
 //        for (var el : result) {
 //            System.out.println(el);
