@@ -34,7 +34,6 @@ public class TaskExecutor <TIn extends Serializable, TOut extends Serializable, 
             }
         }
         System.out.println("method name " + ex.getName());
-        //ex.invoke(operation,data);
         var ans = new JavaMpiNodeResponseDto();
         ans.id = id;
         ans.answer = JavaMpiUtils.testEncode(ex.invoke(operation,data)); //JavaMpiUtils.Encode(ex.invoke(operation,data));//
