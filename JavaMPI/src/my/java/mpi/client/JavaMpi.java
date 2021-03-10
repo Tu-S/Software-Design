@@ -4,6 +4,7 @@ import my.java.mpi.agent.JavaMpiAgent;
 import my.java.mpi.annoatation.Remote;
 import my.java.mpi.common.JavaMpiUtils;
 import my.java.mpi.server.dtos.JavaMpiDto;
+import my.java.mpi.test.Person;
 
 import java.awt.*;
 import java.io.*;
@@ -58,6 +59,17 @@ public final class JavaMpi {
         return null;
     }
 
+    public static <TIn, R> Object[] cloudMap(TIn data, Function<? super TIn,? extends R> mapper) throws IOException, ClassNotFoundException {
+        var operationClass = mapper.getClass();
+        System.out.println("operation class = " + operationClass.getName());
+        var inClass = data.getClass();
+        System.out.println("inClass = " + inClass.getName());
+        var request = new JavaMpiDto(JavaMpiAgent.allLoadedClasses, JavaMpiUtils.testEncode(operationClass), JavaMpiUtils.testEncode(inClass), JavaMpiUtils.testEncode(data), true);
+        var resFromServer = JavaMpi.testServerExchange(request,Object[].class);
+        return resFromServer;
+    }
+
+
 //    public static <TIn extends Serializable, TOperation extends AJavaMpiMapOperation<TIn, TOut>, TOut extends Serializable> Callable<? extends List<TOut>> Execute(Collection<TIn> data, Class<TOperation> operationClass, int executorsCount) {
 //        var executor = Executors.newFixedThreadPool(executorsCount);
 //        var chunks = new LinkedList<ArrayList<TIn>>();
@@ -71,11 +83,7 @@ public final class JavaMpi {
 //        return new JavaMpiCallable<TOut>(subTasks);
 //    }
 
-//    public static <TIn, R> Stream<R> cloudMap(Collection<TIn> data, Function<? super TIn,? extends R> mapper){
-//
-//        System.out.println("in cloud map "+mapper.getClass());
-//        return  data.stream().map(mapper);
-//    }
+
 
 //    private static class LocalCallable<TIn extends Serializable, TOperation extends AJavaMpiOperation<TIn, TOut>, TOut extends Serializable> implements Callable<TOut> {
 //

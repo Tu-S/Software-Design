@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TestApp {
     public static void main(String[] args) throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
@@ -15,7 +16,9 @@ public class TestApp {
         for (int i = 0; i < source.length; i++) {
             source[i] = new Person(i,"person name " + i);
         }
-        List<Person> persons = (ArrayList<Person>)JavaMpi.testExecute(source,TestMapOperation.class).collect(Collectors.toCollection(ArrayList::new));
+        //List<Person> persons = (ArrayList<Person>)JavaMpi.testExecute(source,TestMapOperation.class).collect(Collectors.toCollection(ArrayList::new));
+        Person[] persons = (Person[]) JavaMpi.cloudMap(source,TestMapOperation::staticMethod);
+
         for (Person p : persons){
             System.out.println(p.name);
         }
