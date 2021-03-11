@@ -38,7 +38,7 @@ public final class JavaMpi {
 //        return JavaMpi.<JavaMpiDto, TOut>ServerExchange(request, outClass);
 //    }
     public static <TIn extends Serializable,TOperation> Stream<?> testExecute(TIn data, Class<TOperation> operationClass) throws IOException, ClassNotFoundException {
-        System.out.println("input class = " + data.getClass().getSimpleName());
+        System.out.println("input class = " + data.getClass().getCanonicalName());
         int executorsCount = 3;
         Method ex = null;
         for(Method m : operationClass.getDeclaredMethods()){
@@ -61,9 +61,9 @@ public final class JavaMpi {
 
     public static <TIn, R> Object[] cloudMap(TIn data, Function<? super TIn,? extends R> mapper) throws IOException, ClassNotFoundException {
         var operationClass = mapper.getClass();
-        System.out.println("operation class = " + operationClass.getName());
+        System.out.println("operation class = " + operationClass.getCanonicalName());
         var inClass = data.getClass();
-        System.out.println("inClass = " + inClass.getName());
+        System.out.println("inClass = " + inClass.getCanonicalName());
         var request = new JavaMpiDto(JavaMpiAgent.allLoadedClasses, JavaMpiUtils.testEncode(operationClass), JavaMpiUtils.testEncode(inClass), JavaMpiUtils.testEncode(data), true);
         var resFromServer = JavaMpi.testServerExchange(request,Object[].class);
         return resFromServer;

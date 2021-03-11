@@ -21,6 +21,7 @@ public class LoadedClassesExtruder implements ClassFileTransformer {
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) {
         classesCodes.add(new KeyValuePair<String, byte[]>(classBeingRedefined.getCanonicalName(), classfileBuffer.clone()));
+        System.out.println("In inst ============================================ " + className);
         return classfileBuffer;
     }
 }
