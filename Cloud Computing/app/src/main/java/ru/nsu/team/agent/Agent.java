@@ -11,6 +11,9 @@ public class Agent {
 
     public static void premain(String args, Instrumentation inst) {
         inst.addTransformer(new ClassCollector(loadedClasses));
+        for (var cl : inst.getAllLoadedClasses()) {
+            System.out.println(cl.getName());
+        }
     }
 
     public static void main(String[] args) {

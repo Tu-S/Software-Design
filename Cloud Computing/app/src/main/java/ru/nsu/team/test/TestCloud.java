@@ -4,40 +4,22 @@ import ru.nsu.team.client.CloudExecutor;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TestCloud {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         CloudExecutor.init("localhost", 18228);
-        var source = new Integer[10];
+        var source = new Person[10];
         for (int i = 0; i < source.length; i++) {
-            source[i] = i;
+            source[i] = new Person(i, "person name " + i);
         }
+        List<Person> personsStream = (ArrayList<Person>)CloudExecutor.testExecute(source,TestMapOperation.class).collect(Collectors.toCollection(ArrayList::new));
+        Person[] persons = (Person[]) CloudExecutor.staticExecute(source, TestMapOperation::staticMethod);
 
-
-        //CloudExecutor.testExecWithAnnotation(Arrays.asList(source),MyFunc.class);
-
-//        List<Integer> list = new ArrayList<>();
-//        for(int i = 0 ; i < 10;i++){
-//            list.add(i);
-//        }
-        //list.stream().map(MyFunc::method).forEach(System.out::println);
-//        MyFunc f = new MyFunc();
-//        var res = CloudExecutor.cloudMap(list,MyFunc::staticMethod);
-//        for(Object i : res.collect(Collectors.toCollection(ArrayList::new))){
-//            System.out.println(i);
-//        }
-
-        TestAnnotation.testAnnotation();
-        /*var result = CloudExecutor.execute(source, Integer[].class, TestOperation.class, String[].class);
-        for (var el : result) {
-            System.out.println(el);
-        }*/
-
-
+        for (Person p : persons) {
+            System.out.println(p.name);
+        }
     }
 
 }
