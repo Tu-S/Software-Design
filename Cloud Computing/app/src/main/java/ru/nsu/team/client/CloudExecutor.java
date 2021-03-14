@@ -2,7 +2,7 @@ package ru.nsu.team.client;
 
 import ru.nsu.team.agent.Agent;
 import ru.nsu.team.annotation.Remote;
-import ru.nsu.team.packages.PackageToServer;
+import ru.nsu.team.packet.CloudPacket;
 
 import ru.nsu.team.tools.Toolkit;
 
@@ -31,7 +31,7 @@ public class CloudExecutor {
 
     public static <TIn extends Serializable, TOperation extends CloudOperation<TIn, TOut>, TOut extends Serializable> TOut execute(TIn data, Class<TIn> inClass, Class<TOperation> operationClass, Class<TOut> outClass) throws ClassNotFoundException, IOException {
 
-        var request = new PackageToServer(Agent.loadedClasses, Toolkit.Encode(operationClass), Toolkit.Encode(inClass), Toolkit.Encode(data), true);
+        var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass), Toolkit.Encode(inClass), Toolkit.Encode(data), true);
 
         return CloudExecutor.serverExchange(request, outClass);
     }
@@ -68,7 +68,7 @@ public class CloudExecutor {
             System.out.println(inClass.getName());
             Class<?> outClass = ex.getReturnType();
             Class<?> outType = outClass.getComponentType();
-            var request = new PackageToServer(Agent.loadedClasses, Toolkit.testEncode(operationClass), Toolkit.testEncode(inClass), Toolkit.testEncode(data), true);
+            var request = new CloudPacket(Agent.loadedClasses, Toolkit.testEncode(operationClass), Toolkit.testEncode(inClass), Toolkit.testEncode(data), true);
             var resFromServer = CloudExecutor.testServerExchange(request, Object[].class);
             return Arrays.stream(resFromServer);
         }
@@ -80,12 +80,12 @@ public class CloudExecutor {
         System.out.println("operation class = " + operationClass.getCanonicalName());
         var inClass = data.getClass();
         System.out.println("inClass = " + inClass.getCanonicalName());
-        var request = new PackageToServer(Agent.loadedClasses, Toolkit.testEncode(operationClass), Toolkit.testEncode(inClass), Toolkit.testEncode(data), true);
+        var request = new CloudPacket(Agent.loadedClasses, Toolkit.testEncode(operationClass), Toolkit.testEncode(inClass), Toolkit.testEncode(data), true);
         var resFromServer = CloudExecutor.testServerExchange(request, Object[].class);
         return resFromServer;
     }
 
-    private static <TResponse> TResponse testServerExchange(PackageToServer request, Class<TResponse> responseClass) throws IOException, ClassNotFoundException {
+    private static <TResponse> TResponse testServerExchange(CloudPacket request, Class<TResponse> responseClass) throws IOException, ClassNotFoundException {
         var socket = new Socket(host, port);
         var outputStream = new DataOutputStream(socket.getOutputStream());
         var inputStream = new DataInputStream(socket.getInputStream());

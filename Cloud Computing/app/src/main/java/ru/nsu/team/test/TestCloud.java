@@ -15,9 +15,9 @@ public class TestCloud {
             source[i] = new Person(i, "person name " + i);
         }
         List<Person> personsStream = (ArrayList<Person>)CloudExecutor.testExecute(source,TestMapOperation.class).collect(Collectors.toCollection(ArrayList::new));
-        Person[] persons = (Person[]) CloudExecutor.staticExecute(source, TestMapOperation::staticMethod);
+        //Person[] persons = (Person[]) CloudExecutor.staticExecute(source, TestMapOperation::staticMethod);
 
-        for (Person p : persons) {
+        for (Person p : personsStream) {
             System.out.println(p.name);
         }
     }

@@ -59,9 +59,10 @@ public final class JavaMpi {
         return null;
     }
 
+
     public static <TIn, R> Object[] cloudMap(TIn data, Function<? super TIn,? extends R> mapper) throws IOException, ClassNotFoundException {
-        var operationClass = mapper.getClass();
-        System.out.println("operation class = " + operationClass.getCanonicalName());
+        var operationClass = mapper.getClass().getSuperclass();
+        System.out.println("operation class = " + operationClass.getName());
         var inClass = data.getClass();
         System.out.println("inClass = " + inClass.getCanonicalName());
         var request = new JavaMpiDto(JavaMpiAgent.allLoadedClasses, JavaMpiUtils.testEncode(operationClass), JavaMpiUtils.testEncode(inClass), JavaMpiUtils.testEncode(data), true);

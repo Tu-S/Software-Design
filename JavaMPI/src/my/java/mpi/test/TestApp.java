@@ -16,8 +16,8 @@ public class TestApp {
         for (int i = 0; i < source.length; i++) {
             source[i] = new Person(i,"person name " + i);
         }
-        //List<Person> persons = (ArrayList<Person>)JavaMpi.testExecute(source,TestMapOperation.class).collect(Collectors.toCollection(ArrayList::new));
-        Person[] persons = (Person[]) JavaMpi.cloudMap(source,TestMapOperation::staticMethod);
+        // List<Person> persons = (ArrayList<Person>)JavaMpi.testExecute(source,TestMapOperation.class).collect(Collectors.toCollection(ArrayList::new));
+        Person[] persons = (Person[]) JavaMpi.cloudMap(source, TestMapOperation::staticMethod);
 
         for (Person p : persons){
             System.out.println(p.name);
