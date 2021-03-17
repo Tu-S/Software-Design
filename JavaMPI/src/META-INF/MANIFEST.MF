@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: my.java.mpi.agent.JavaMpiAgent
-PreMain-Class: my.java.mpi.agent.JavaMpiAgent
