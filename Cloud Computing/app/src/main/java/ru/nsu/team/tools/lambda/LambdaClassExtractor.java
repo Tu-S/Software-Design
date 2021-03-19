@@ -11,7 +11,7 @@ public class LambdaClassExtractor {
   }
 
   private static Class<?> getClass(Object consumer) {
-    return method(consumer).getDeclaringClass();
+    return getMethod(consumer).getDeclaringClass();
   }
 
   private static SerializedLambda serialize(Object lambda) {
@@ -33,7 +33,7 @@ public class LambdaClassExtractor {
     }
   }
 
-  private static Method method(Object lambda) {
+  private static Method getMethod(Object lambda) {
     SerializedLambda serialized = serialize(lambda);
     Class<?> containingClass = getContainingClass(serialized);
     return Arrays.stream(containingClass.getDeclaredMethods())
