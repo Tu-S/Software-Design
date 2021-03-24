@@ -8,13 +8,14 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-public class TaskExecutor<TIn, TOut, TOperation> implements Callable<CloudNodeResponsePacket> {
-    private Class<TOperation> operationClass;
-    private TIn data;
-    private UUID uuid;
-    private int methodHashCode;
+public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResponsePacket> {
+    private final Class<TOperation> operationClass;
+    private final T data;
+    private final UUID uuid;
+    private final int methodHashCode;
 
-    public TaskExecutor(final Class<TOperation> operationClass, int methodHashCode, final TIn data, final UUID uuid) {
+    public TaskExecutor(final Class<TOperation> operationClass, int methodHashCode,
+                        final T data, final UUID uuid) {
         this.operationClass = operationClass;
         this.data = data;
         this.uuid = uuid;

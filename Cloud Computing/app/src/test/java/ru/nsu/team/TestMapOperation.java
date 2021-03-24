@@ -1,6 +1,4 @@
-package ru.nsu.team.test;
-
-import java.io.Serializable;
+package ru.nsu.team;
 
 public class TestMapOperation {
 
@@ -15,7 +13,7 @@ public class TestMapOperation {
     public Person[] execute(Person[] input) {
         for (Person p : input) {
             p.age = p.age * 2;
-            p.name = p.name.replaceAll("name", "non-static");
+            p.name = p.name.replaceAll("name", "non-static method");
         }
         return input;
     }

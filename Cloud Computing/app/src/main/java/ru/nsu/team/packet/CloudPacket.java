@@ -19,7 +19,9 @@ public class CloudPacket implements Serializable {
 
     public boolean isMapOperation;
 
-    public CloudPacket(LinkedList<KeyValuePair<String, byte[]>> classCodes, byte[] operationClass, byte[] dataClass, byte[] data, boolean isMapOperation, int hashCode) {
+    public CloudPacket(LinkedList<KeyValuePair<String, byte[]>> classCodes, byte[] operationClass,
+                       byte[] dataClass, byte[] data,
+                       boolean isMapOperation, int hashCode) {
         this.classCodes = classCodes;
         this.operationClass = operationClass;
         this.dataClass = dataClass;

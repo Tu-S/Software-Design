@@ -8,7 +8,6 @@ public class CloudNodePacket implements Serializable {
     public CloudPacket input;
 
     public CloudNodePacket() {
-
     }
 
     public CloudNodePacket(final UUID uuid, final CloudPacket input) {

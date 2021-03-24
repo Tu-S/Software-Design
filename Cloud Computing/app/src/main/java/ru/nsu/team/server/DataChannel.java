@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class DataChannel {
-    private Socket socket;
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
+    private final Socket socket;
+    private final DataInputStream inputStream;
+    private final DataOutputStream outputStream;
 
     public DataChannel(final Socket socket) throws IOException {
         this.socket = socket;

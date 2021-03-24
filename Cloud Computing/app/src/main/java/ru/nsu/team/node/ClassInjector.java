@@ -11,7 +11,7 @@ public class ClassInjector extends ClassLoader {
         super(parent);
     }
 
-    private HashMap<String, byte[]> classesCodes = new HashMap<String, byte[]>();
+    private final HashMap<String, byte[]> classesCodes = new HashMap<>();
 
     public void InjectClasses(LinkedList<KeyValuePair<String, byte[]>> classesToLoad) {
 
@@ -28,7 +28,7 @@ public class ClassInjector extends ClassLoader {
     }
 
     @Override
-    public Class findClass(String name) {
+    public Class<?> findClass(String name) {
         byte[] data = classesCodes.get(name);
         return defineClass(name, data, 0, data.length);
     }

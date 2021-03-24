@@ -9,9 +9,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TaskSendingService implements Runnable {
-    private ConcurrentLinkedQueue<DataChannel> nodes;
-    private ConcurrentLinkedQueue<DataChannel> clients;
-    private ConcurrentLinkedQueue<NCDataChannel> tasks;
+    private final ConcurrentLinkedQueue<DataChannel> nodes;
+    private final ConcurrentLinkedQueue<DataChannel> clients;
+    private final ConcurrentLinkedQueue<NCDataChannel> tasks;
 
     public TaskSendingService(final ConcurrentLinkedQueue<DataChannel> nodes,
                               final ConcurrentLinkedQueue<DataChannel> clients,

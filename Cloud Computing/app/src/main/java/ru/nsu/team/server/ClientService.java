@@ -7,8 +7,8 @@ import java.net.ServerSocket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ClientService implements Runnable {
-    private ConcurrentLinkedQueue<DataChannel> clients;
-    private ServerSocket clientSocket;
+    private final ConcurrentLinkedQueue<DataChannel> clients;
+    private final ServerSocket clientSocket;
 
     public ClientService(final ConcurrentLinkedQueue<DataChannel> clients, final ServerSocket clientSocket) {
         this.clients = clients;

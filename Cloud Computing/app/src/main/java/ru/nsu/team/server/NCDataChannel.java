@@ -1,8 +1,8 @@
 package ru.nsu.team.server;
 
 public class NCDataChannel {
-    private DataChannel nodeChannel;
-    private DataChannel clientChannel;
+    private final DataChannel nodeChannel;
+    private final DataChannel clientChannel;
 
     public NCDataChannel(final DataChannel nodeChannel, final DataChannel clientChannel) {
         this.nodeChannel = nodeChannel;

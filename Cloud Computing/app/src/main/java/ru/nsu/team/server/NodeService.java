@@ -5,8 +5,8 @@ import java.net.ServerSocket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class NodeService implements Runnable {
-    private ConcurrentLinkedQueue<DataChannel> nodes;
-    private ServerSocket nodeSocket;
+    private final ConcurrentLinkedQueue<DataChannel> nodes;
+    private final ServerSocket nodeSocket;
 
     public NodeService(final ConcurrentLinkedQueue<DataChannel> nodes, final ServerSocket nodeSocket) {
         this.nodes = nodes;

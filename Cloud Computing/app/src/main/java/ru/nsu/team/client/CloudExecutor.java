@@ -20,12 +20,13 @@ public class CloudExecutor {
   private CloudExecutor() {
   }
 
-  public static void init(String host, int port) throws IOException {
+  public static void init(String host, int port) {
     CloudExecutor.host = host;
     CloudExecutor.port = port;
   }
 
-  public static <TIn, R> Object[] execute(TIn data, SerializableFunction<? super TIn, ? extends R> mapper) throws IOException, ClassNotFoundException {
+  public static <T, R> Object[] execute(T data, SerializableFunction<? super T, ? extends R> mapper)
+      throws IOException, ClassNotFoundException {
     var operationClass = LambdaExtractor.extractClass(mapper);
     var method = LambdaExtractor.extractMethod(mapper);
     var hashCode = method.hashCode();
@@ -33,11 +34,13 @@ public class CloudExecutor {
     System.out.println("operation class = " + operationClass.getCanonicalName());
     var inClass = data.getClass();
     System.out.println("inClass = " + inClass.getCanonicalName());
-    var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass), Toolkit.Encode(inClass), Toolkit.Encode(data), true,hashCode);
+    var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass),
+        Toolkit.Encode(inClass), Toolkit.Encode(data), true, hashCode);
     return CloudExecutor.serverExchange(request, Object[].class);
   }
 
-  private static <TResponse> TResponse serverExchange(CloudPacket request, Class<TResponse> responseClass) throws IOException, ClassNotFoundException {
+  private static <TResponse> TResponse serverExchange(CloudPacket request, Class<TResponse> responseClass)
+      throws IOException, ClassNotFoundException {
     var socket = new Socket(host, port);
     var outputStream = new DataOutputStream(socket.getOutputStream());
     var inputStream = new DataInputStream(socket.getInputStream());
