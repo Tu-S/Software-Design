@@ -21,11 +21,22 @@ public class TestCloud {
             System.out.println(" " + p.name);
         }
 
-//        System.out.println("Non-static method:");
-//        persons = (Person[]) CloudExecutor.execute(source, new TestMapOperation()::execute);
-//
-//        for (Person p : persons) {
-//            System.out.println(" " + p.name);
-//        }
+        System.out.println("Non-static method:");
+        persons = (Person[]) CloudExecutor.execute(source, new TestMapOperation()::execute);
+
+        for (Person p : persons) {
+            System.out.println(" " + p.name);
+        }
+        var integers = new Integer[10];
+        for (int i = 0; i < integers.length; i++) {
+            integers[i] = i;
+        }
+
+        System.out.println("Lambda:");
+        Integer[] res = (Integer[]) CloudExecutor.execute(integers,n->n);
+
+        for (Integer p : res) {
+            System.out.println(p);
+        }
     }
 }

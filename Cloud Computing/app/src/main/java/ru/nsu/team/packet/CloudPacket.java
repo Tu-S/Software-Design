@@ -15,13 +15,16 @@ public class CloudPacket implements Serializable {
 
   public byte[] data;
 
+  public int hashCode;
+
   public boolean isMapOperation;
 
-  public CloudPacket(LinkedList<KeyValuePair<String, byte[]>> classCodes, byte[] operationClass, byte[] dataClass, byte[] data, boolean isMapOperation) {
+  public CloudPacket(LinkedList<KeyValuePair<String, byte[]>> classCodes, byte[] operationClass, byte[] dataClass, byte[] data, boolean isMapOperation,int hashCode) {
     this.classCodes = classCodes;
     this.operationClass = operationClass;
     this.dataClass = dataClass;
     this.data = data;
     this.isMapOperation = isMapOperation;
+    this.hashCode = hashCode;
   }
 }

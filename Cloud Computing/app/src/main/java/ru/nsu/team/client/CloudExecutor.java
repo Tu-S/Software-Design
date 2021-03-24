@@ -32,7 +32,7 @@ public class CloudExecutor {
 
   public static <TIn extends Serializable, TOperation extends CloudOperation<TIn, TOut>, TOut extends Serializable> TOut execute(TIn data, Class<TIn> inClass, Class<TOperation> operationClass, Class<TOut> outClass) throws ClassNotFoundException, IOException {
 
-    var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass), Toolkit.Encode(inClass), Toolkit.Encode(data), true);
+    var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass), Toolkit.Encode(inClass), Toolkit.Encode(data), true,-1);
 
     return CloudExecutor.serverExchange(request, outClass);
   }
@@ -52,7 +52,7 @@ public class CloudExecutor {
       System.out.println(inClass.getName());
       Class<?> outClass = ex.getReturnType();
       Class<?> outType = outClass.getComponentType();
-      var request = new CloudPacket(Agent.loadedClasses, Toolkit.testEncode(operationClass), Toolkit.testEncode(inClass), Toolkit.testEncode(data), true);
+      var request = new CloudPacket(Agent.loadedClasses, Toolkit.testEncode(operationClass), Toolkit.testEncode(inClass), Toolkit.testEncode(data), true,-1);
       var resFromServer = CloudExecutor.testServerExchange(request, Object[].class);
       return Arrays.stream(resFromServer);
     }
@@ -67,7 +67,7 @@ public class CloudExecutor {
     System.out.println("operation class = " + operationClass.getCanonicalName());
     var inClass = data.getClass();
     System.out.println("inClass = " + inClass.getCanonicalName());
-    var request = new CloudPacket(Agent.loadedClasses, Toolkit.testEncode(operationClass), Toolkit.testEncode(inClass), Toolkit.testEncode(data), true);
+    var request = new CloudPacket(Agent.loadedClasses, Toolkit.testEncode(operationClass), Toolkit.testEncode(inClass), Toolkit.testEncode(data), true,hashCode);
     return CloudExecutor.testServerExchange(request, Object[].class);
   }
 

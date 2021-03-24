@@ -13,11 +13,13 @@ public class TaskExecutor <TIn extends Serializable, TOut extends Serializable, 
   private Class<TOperation> operationClass;
   private TIn data;
   private UUID uuid;
+  private int methodHashCode;
 
-  public TaskExecutor(final Class<TOperation> operationClass, final TIn data, final UUID uuid) {
+  public TaskExecutor(final Class<TOperation> operationClass,int methodHashCode ,final TIn data, final UUID uuid) {
     this.operationClass = operationClass;
     this.data = data;
     this.uuid = uuid;
+    this.methodHashCode = methodHashCode;
   }
 
   @Override
@@ -25,7 +27,7 @@ public class TaskExecutor <TIn extends Serializable, TOut extends Serializable, 
     var operation = (TOperation) operationClass.getDeclaredConstructor().newInstance();
     Method ex = null;
     for (Method m : operationClass.getDeclaredMethods()) {
-      if (m.isAnnotationPresent(Remote.class)) {
+      if (m.hashCode() == this.methodHashCode) {
         ex = m;
         break;
       }
