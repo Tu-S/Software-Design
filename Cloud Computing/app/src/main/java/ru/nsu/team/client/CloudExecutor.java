@@ -6,7 +6,7 @@ import ru.nsu.team.packet.CloudPacket;
 
 import ru.nsu.team.tools.Toolkit;
 import ru.nsu.team.tools.lambda.SerializableFunction;
-import ru.nsu.team.tools.lambda.LambdaClassExtractor;
+import ru.nsu.team.tools.lambda.LambdaExtractor;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -60,7 +60,10 @@ public class CloudExecutor {
   }
 
   public static <TIn, R> Object[] execute(TIn data, SerializableFunction<? super TIn, ? extends R> mapper) throws IOException, ClassNotFoundException {
-    var operationClass = LambdaClassExtractor.extract(mapper);
+    var operationClass = LambdaExtractor.extractClass(mapper);
+    var method = LambdaExtractor.extractMethod(mapper);
+    var hashCode = method.hashCode();
+    System.out.println("method = " + method.getName());
     System.out.println("operation class = " + operationClass.getCanonicalName());
     var inClass = data.getClass();
     System.out.println("inClass = " + inClass.getCanonicalName());

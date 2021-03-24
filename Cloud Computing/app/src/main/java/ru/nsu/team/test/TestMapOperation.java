@@ -7,12 +7,11 @@ import java.io.Serializable;
 
 public class TestMapOperation {
 
-
     @Remote
     public static Person[] staticMethod(Person[] input) {
         for (Person p : input) {
             p.age = p.age * 2;
-            p.name = p.name.replaceAll("name", "heh");
+            p.name = p.name.replaceAll("name", "hehsdf");
         }
         return input;
 //        var ans = new Integer[input.length];
@@ -22,17 +21,17 @@ public class TestMapOperation {
 //        return ans;
     }
 
-    @Remote
-    public Person[] execute(Person[] input) {
-        for (Person p : input) {
-            p.age = p.age * 2;
-            p.name = p.name.replaceAll("name", "heh");
-        }
-        return input;
-//        var ans = new Integer[input.length];
-//        for (int i = 0; i < input.length; i++) {
-//            ans[i] = Integer.parseInt(input[i])*3;
+//    @Remote
+//    public Person[] execute(Person[] input) {
+//        for (Person p : input) {
+//            p.age = p.age * 2;
+//            p.name = p.name.replaceAll("name", "hehh");
 //        }
-//        return ans;
-    }
+//        return input;
+////        var ans = new Integer[input.length];
+////        for (int i = 0; i < input.length; i++) {
+////            ans[i] = Integer.parseInt(input[i])*3;
+////        }
+////        return ans;
+//    }
 }
