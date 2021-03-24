@@ -12,8 +12,6 @@ public class TestCloud {
             source[i] = new Person(i, "person name " + i);
         }
 
-        //List<Person> personsStream = (ArrayList<Person>)CloudExecutor.testExecute(source,TestMapOperation.class).collect(Collectors.toCollection(ArrayList::new));
-
         System.out.println("Static method:");
         Person[] persons = (Person[]) CloudExecutor.execute(source, TestMapOperation::staticMethod);
 
@@ -33,7 +31,13 @@ public class TestCloud {
         }
 
         System.out.println("Lambda:");
-        Integer[] res = (Integer[]) CloudExecutor.execute(integers,n->n);
+        final int a = 300;
+        Integer[] res = (Integer[]) CloudExecutor.execute(integers, n -> {
+            for (int i = 0; i < n.length; i++) {
+                n[i] *= a;
+            }
+            return n;
+        });
 
         for (Integer p : res) {
             System.out.println(p);

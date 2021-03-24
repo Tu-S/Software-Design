@@ -1,7 +1,5 @@
 package ru.nsu.team.test;
 
-import ru.nsu.team.client.CloudMapOperation;
-
 import java.io.Serializable;
 
 public class TestMapOperation {
@@ -12,11 +10,6 @@ public class TestMapOperation {
             p.name = p.name.replaceAll("name", "static method");
         }
         return input;
-//        var ans = new Integer[input.length];
-//        for (int i = 0; i < input.length; i++) {
-//            ans[i] = Integer.parseInt(input[i])*3;
-//        }
-//        return ans;
     }
 
     public Person[] execute(Person[] input) {
@@ -25,10 +18,5 @@ public class TestMapOperation {
             p.name = p.name.replaceAll("name", "non-static");
         }
         return input;
-//        var ans = new Integer[input.length];
-//        for (int i = 0; i < input.length; i++) {
-//            ans[i] = Integer.parseInt(input[i])*3;
-//        }
-//        return ans;
     }
 }
