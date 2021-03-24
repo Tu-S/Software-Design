@@ -37,23 +37,6 @@ public class CloudExecutor {
     return CloudExecutor.serverExchange(request, outClass);
   }
 
-
-  //    public static <TIn extends Serializable, R extends Serializable> Stream<R> cloudMap(List<TIn> data, Function<TIn, R> mapper) {
-//        /*хз как получить нужные типы, с входными параметрами +- ок, но вот с выходным хз. Хз как хочет мигина, но эту херь так просто не сделаешь*/
-//        System.out.println("in cloud map " + mapper.getClass());
-//        System.out.println("in elem class = " + data.get(0).getClass());
-//        var inArr = (TIn[]) java.lang.reflect.Array.newInstance(data.get(0).getClass(), data.size());
-//        Class<? extends Serializable[]> cl = inArr.getClass();
-//        System.out.println("in array class = " + cl.getSimpleName());
-//        var out = mapper.apply(data.get(0));
-//        var outArr = (R[]) java.lang.reflect.Array.newInstance(out.getClass(), data.size());
-//        System.out.println("out elem class = " + out.getClass().getSimpleName());
-//        System.out.println("out array class = " + outArr.getClass().getSimpleName());
-//        var wtf = new Integer[10];
-//        //execute(wtf,inArr.getClass(),TestOperation.class,outArr.getClass());
-//        //Sergey's test version
-//        return data.stream().map(mapper);
-//    }
   public static <TIn extends Serializable, TOperation> Stream<?> testExecute(TIn data, Class<TOperation> operationClass) throws IOException, ClassNotFoundException {
     System.out.println("input class = " + data.getClass().getCanonicalName());
     int executorsCount = 3;
