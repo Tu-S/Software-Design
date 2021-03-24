@@ -33,6 +33,7 @@ public class TaskExecutor <TIn extends Serializable, TOut extends Serializable, 
       }
     }
     System.out.println("Method name " + ex.getName());
+    ex.setAccessible(true);
     return new CloudNodeResponsePacket(uuid, Toolkit.testEncode(ex.invoke(operation, data)));
   }
 }
