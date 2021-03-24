@@ -2,16 +2,15 @@ package ru.nsu.team.tools.lambda;
 
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class LambdaClassExtractor {
-  public static <T, R> Class<?> extract(SerializableFunction<T, R> consumer) {
-    return getClass(consumer);
+  public static <T, R> Class<?> extract(SerializableFunction<T, R> lambda) {
+    return getClass(lambda);
   }
 
-  private static Class<?> getClass(Object consumer) {
-    return getMethod(consumer).getDeclaringClass();
+  private static Class<?> getClass(Object lambda) {
+    SerializedLambda serialized = serialize(lambda);
+    return getContainingClass(serialized);
   }
 
   private static SerializedLambda serialize(Object lambda) {
@@ -31,14 +30,5 @@ public class LambdaClassExtractor {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private static Method getMethod(Object lambda) {
-    SerializedLambda serialized = serialize(lambda);
-    Class<?> containingClass = getContainingClass(serialized);
-    return Arrays.stream(containingClass.getDeclaredMethods())
-        .filter(method -> Objects.equals(method.getName(), serialized.getImplMethodName()))
-        .findFirst()
-        .orElseThrow(RuntimeException::new);
   }
 }
