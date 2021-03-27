@@ -10,7 +10,7 @@ public class TestMapOperation {
         return input;
     }
 
-    public Person[] execute(Person[] input) {
+    public Person[] nonStaticMethod(Person[] input) {
         for (Person p : input) {
             p.age = p.age * 2;
             p.name = p.name.replaceAll("name", "non-static method");

@@ -11,6 +11,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class CloudExecutor {
 
@@ -25,7 +27,7 @@ public class CloudExecutor {
     CloudExecutor.port = port;
   }
 
-  public static <T, R> Object[] execute(T data, SerializableFunction<? super T, ? extends R> mapper)
+  public static <T, R> Stream<Object> execute(T data, SerializableFunction<? super T, ? extends R> mapper)
       throws IOException, ClassNotFoundException {
     var operationClass = LambdaExtractor.extractClass(mapper);
     var method = LambdaExtractor.extractMethod(mapper);
@@ -36,7 +38,7 @@ public class CloudExecutor {
     System.out.println("inClass = " + inClass.getCanonicalName());
     var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass),
         Toolkit.Encode(inClass), Toolkit.Encode(data), true, hashCode);
-    return CloudExecutor.serverExchange(request, Object[].class);
+    return Arrays.stream(CloudExecutor.serverExchange(request, Object[].class));
   }
 
   private static <TResponse> TResponse serverExchange(CloudPacket request, Class<TResponse> responseClass)
