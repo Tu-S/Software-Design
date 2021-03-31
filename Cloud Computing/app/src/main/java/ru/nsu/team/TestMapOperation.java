@@ -1,5 +1,8 @@
 package ru.nsu.team;
 
+import java.util.Collection;
+import java.util.List;
+
 public class TestMapOperation {
 
     public static Person[] staticMethod(Person[] input) {
@@ -8,6 +11,16 @@ public class TestMapOperation {
             p.name = p.name.replaceAll("name", "static method");
         }
         return input;
+    }
+
+    public static Object[] testStaticMethod(Object[] input) {
+        for (Object t : input) {
+            var p = (Person)t;
+            p.age = p.age * 2;
+            p.name = p.name.replaceAll("name", "static method");
+            System.out.println(p.age);
+        }
+        return  input;
     }
 
     public Person[] nonStaticMethod(Person[] input) {

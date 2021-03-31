@@ -7,12 +7,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class JavaMpiCallable<T,R> implements Callable<List<Object[]>> {
+public class CloudCallable<T,R> implements Callable<List<Object[]>> {
 
     private List<LocalCallable<T,R>> subTasks;
     private List<Future<Object[]>> awaitedSubTasks;
 
-    public JavaMpiCallable(List<LocalCallable<T,R>> subTasks) {
+    public CloudCallable(List<LocalCallable<T,R>> subTasks) {
         this.subTasks = subTasks;
     }
 
@@ -31,7 +31,6 @@ public class JavaMpiCallable<T,R> implements Callable<List<Object[]>> {
         }
         var res = new LinkedList<Object[]>();
         for (var task : awaitedSubTasks) {
-            var val = task.get();
             res.addAll(Collections.singleton(task.get()));
         }
         executor.shutdown();

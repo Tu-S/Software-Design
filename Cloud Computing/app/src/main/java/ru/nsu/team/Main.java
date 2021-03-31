@@ -5,12 +5,10 @@ import ru.nsu.team.client.CloudExecutor;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
-
-
+        CloudExecutor.init("localhost",18228);
         var source = new Person[10];
         var personsExpected = new Person[10];
         for (int i = 0; i < source.length; i++) {
@@ -19,7 +17,7 @@ public class Main {
         }
         List<Person> list = Arrays.asList(source);
 
-        CloudExecutor.Execute(list,TestMapOperation::staticMethod,5);
+        CloudExecutor.cloudMap(list,TestMapOperation::testStaticMethod,5).forEach(p -> System.out.println(((Person)p).name + " " + ((Person)p).age));
         //ArrayList<Object> res = CloudExecutor.execute(source, TestMapOperation::staticMethod).collect(Collectors.toCollection(ArrayList<Object>::new));
 
 

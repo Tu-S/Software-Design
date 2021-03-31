@@ -1,6 +1,5 @@
 package ru.nsu.team.client;
 
-import ru.nsu.team.Person;
 import ru.nsu.team.agent.Agent;
 import ru.nsu.team.packet.CloudPacket;
 
@@ -13,7 +12,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -46,7 +44,7 @@ public class CloudExecutor {
         return Arrays.stream(CloudExecutor.serverExchange(request, Object[].class));
     }
 
-    public static <T, R> Object[] testExecute(Object[] data, SerializableFunction<? super T, ? extends R> mapper)
+    public static <T, R> Object[] testExecute(T data, SerializableFunction<? super T, ? extends R> mapper)
             throws IOException, ClassNotFoundException {
         var operationClass = LambdaExtractor.extractClass(mapper);
         var method = LambdaExtractor.extractMethod(mapper);
@@ -85,24 +83,26 @@ public class CloudExecutor {
     }
 
 
-    public static <T, R> void Execute(Collection<T> data, SerializableFunction<? super T, ? extends R> mapper, int executorsCount) throws ExecutionException, InterruptedException {
-
+    public static <T, R> Stream<Object> cloudMap(Collection<T> data, SerializableFunction<? super T[], ? extends R> mapper, int executorsCount) throws ExecutionException, InterruptedException {
         var chunks = new LinkedList<ArrayList<T>>();
         var chunkSize = data.size() / executorsCount + ((data.size() % executorsCount) == 0 ? 0 : 1);
         var dataList = new ArrayList<>(data);
+
         for (int i = 0; i < executorsCount; i++) {
-            chunks.add(new ArrayList<>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
+            chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
         }
 
-        var subTasks = chunks.stream().map(chunk -> new LocalCallable<T,R>(chunk, mapper)).collect(Collectors.toList());
-        var task = new JavaMpiCallable<T,R>(subTasks);
+        var subTasks = chunks.stream().map(chunk -> new LocalCallable<T, R>(chunk, mapper)).collect(Collectors.toList());
+        var task = new CloudCallable<T, R>(subTasks);
         var exec = Executors.newSingleThreadExecutor();
 
         var result3 = exec.submit(task).get();
+        List<Object> list = new ArrayList<>();
         for (var el : result3) {
-            System.out.println(el);
+            list.addAll(Arrays.asList(el));
         }
         exec.shutdown();
+        return list.stream();
     }
 
 
