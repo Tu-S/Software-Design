@@ -17,4 +17,15 @@ public class TestMapOperation {
         }
         return input;
     }
+
+    public static Integer[] getAge(Person[] persons) {
+        Integer[] res = new Integer[persons.length];
+        int i = 0;
+        for (Person p : persons) {
+            res[i] = p.age * 2;
+            i++;
+        }
+        return res;
+
+    }
 }

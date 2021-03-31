@@ -13,7 +13,7 @@ public class ClassInjector extends ClassLoader {
 
     private final HashMap<String, byte[]> classesCodes = new HashMap<>();
 
-    public void InjectClasses(LinkedList<KeyValuePair<String, byte[]>> classesToLoad) {
+    public void injectClasses(LinkedList<KeyValuePair<String, byte[]>> classesToLoad) {
 
         for (var cl : classesToLoad) {
             try {

@@ -30,7 +30,7 @@ public class Node {
                 inputStream.readFully(requestBuffer);
                 var request = Toolkit.Decode(requestBuffer, CloudNodePacket.class);
                 var classInjector = new ClassInjector(Thread.currentThread().getContextClassLoader());
-                classInjector.InjectClasses(request.input.classCodes);
+                classInjector.injectClasses(request.input.classCodes);
                 var operationClass = Toolkit.Decode(request.input.operationClass, Class.class);
                 var dataClass = Toolkit.Decode(request.input.dataClass, Class.class);
                 var data = Toolkit.Decode(request.input.data, dataClass);

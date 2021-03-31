@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 public class Agent {
 
-    public static LinkedList<KeyValuePair<String, byte[]>> loadedClasses = new LinkedList<KeyValuePair<String, byte[]>>();
+    public static LinkedList<KeyValuePair<String, byte[]>> loadedClasses = new LinkedList<>();
 
     public static void premain(String args, Instrumentation inst) {
         inst.addTransformer(new ClassCollector(loadedClasses));

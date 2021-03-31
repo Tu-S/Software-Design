@@ -45,7 +45,7 @@ public class CloudTest {
     }
 
     @Test
-    public void staticMethodTest() throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
+    public void staticMethodTest() throws IOException, ClassNotFoundException {
         var source = new Person[10];
         var personsExpected = new Person[10];
         for (int i = 0; i < source.length; i++) {
@@ -69,6 +69,19 @@ public class CloudTest {
         var res = CloudExecutor.execute(source, new TestMapOperation()::nonStaticMethod).collect(Collectors.toCollection(ArrayList<Object>::new));
         var actualPersons = res.toArray(Person[]::new);
         Assert.assertArrayEquals(personsExpected, actualPersons);
+    }
+
+    @Test
+    public void getAgeStaticMethodTest() throws IOException, ClassNotFoundException {
+        var source = new Person[10];
+        var resExpected = new Integer[10];
+        for (int i = 0; i < source.length; i++) {
+            source[i] = new Person(i, "person name " + i);
+            resExpected[i] = i * 2;
+        }
+        var res = CloudExecutor.execute(source, TestMapOperation::getAge).collect(Collectors.toCollection(ArrayList<Object>::new));
+        var actualRes = res.toArray(Integer[]::new);
+        Assert.assertArrayEquals(resExpected, actualRes);
     }
 
     @Test
