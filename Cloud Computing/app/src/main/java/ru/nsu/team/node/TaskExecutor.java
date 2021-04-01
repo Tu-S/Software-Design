@@ -2,13 +2,14 @@ package ru.nsu.team.node;
 
 
 import ru.nsu.team.packet.CloudNodeResponsePacket;
+import ru.nsu.team.packet.CloudNodeResultPacket;
 import ru.nsu.team.tools.Toolkit;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResponsePacket> {
+public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResultPacket> {
     private final Class<TOperation> operationClass;
     private final T data;
     private final UUID uuid;
@@ -22,8 +23,22 @@ public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResponsePa
         this.methodHashCode = methodHashCode;
     }
 
+    //    @Override
+//    public CloudNodeResponsePacket call() throws Exception {
+//        var operation = (TOperation) operationClass.getDeclaredConstructor().newInstance();
+//        Method ex = null;
+//        for (Method m : operationClass.getDeclaredMethods()) {
+//            if (m.hashCode() == this.methodHashCode) {
+//                ex = m;
+//                break;
+//            }
+//        }
+//        System.out.println("Method name " + ex.getName());
+//        ex.setAccessible(true);
+//        return new CloudNodeResponsePacket(uuid, Toolkit.Encode(ex.invoke(operation, data)));
+//    }
     @Override
-    public CloudNodeResponsePacket call() throws Exception {
+    public CloudNodeResultPacket call() throws Exception {
         var operation = (TOperation) operationClass.getDeclaredConstructor().newInstance();
         Method ex = null;
         for (Method m : operationClass.getDeclaredMethods()) {
@@ -34,6 +49,6 @@ public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResponsePa
         }
         System.out.println("Method name " + ex.getName());
         ex.setAccessible(true);
-        return new CloudNodeResponsePacket(uuid, Toolkit.Encode(ex.invoke(operation, data)));
+        return new CloudNodeResultPacket(uuid, (Object[]) ex.invoke(operation, data));
     }
 }

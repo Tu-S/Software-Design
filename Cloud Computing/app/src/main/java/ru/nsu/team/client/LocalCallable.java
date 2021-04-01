@@ -17,7 +17,7 @@ public class LocalCallable<T, R> implements Callable<Object[]> {
 
     @Override
     public Object[] call() throws Exception {
-        return CloudExecutor.testExecute(data, mapper);// <TIn, TOperation, TOut>Execute(data, inClass, operationClass, outClass);
+        return CloudExecutor.testDataCommandExecute(data, mapper);
     }
 }
 

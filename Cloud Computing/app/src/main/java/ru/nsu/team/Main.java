@@ -1,6 +1,8 @@
 package ru.nsu.team;
 
 import ru.nsu.team.client.CloudExecutor;
+import ru.nsu.team.node.Node;
+import ru.nsu.team.server.Server;
 
 import java.io.IOException;
 import java.util.*;
@@ -8,8 +10,35 @@ import java.util.concurrent.ExecutionException;
 
 public class Main {
     public static void main(String[] args) throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
-        CloudExecutor.init("localhost",18228);
+//        CloudExecutor.init("localhost", 18228);
+//        var server = new Thread(() -> {
+//            try {
+//                Server.main(null);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        server.start();
+//        var node1 = new Thread(() -> {
+//            try {
+//                Node.main(null);
+//            } catch (IOException | ClassNotFoundException | ExecutionException | InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        node1.start();
+//        var node2 = new Thread(() -> {
+//            try {
+//                Node.main(null);
+//            } catch (IOException | ClassNotFoundException | ExecutionException | InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        node2.start();
+        CloudExecutor.init("localhost", 18228);
+
         var source = new Person[10];
+
         var personsExpected = new Person[10];
         for (int i = 0; i < source.length; i++) {
             source[i] = new Person(i, "person name " + i);
@@ -17,9 +46,14 @@ public class Main {
         }
         List<Person> list = Arrays.asList(source);
 
-        CloudExecutor.cloudMap(list,TestMapOperation::testStaticMethod,5).forEach(p -> System.out.println(((Person)p).name + " " + ((Person)p).age));
+        CloudExecutor.testCloudMap(list, TestMapOperation::testStaticMethod, 5);
+        CloudExecutor.applyFunction(TestMapOperation::testStaticMethod);
+//        var res = CloudExecutor.collect();
+//        for (var e : res) {
+//            System.out.println(((Person) e).age);
+//
+//        }
         //ArrayList<Object> res = CloudExecutor.execute(source, TestMapOperation::staticMethod).collect(Collectors.toCollection(ArrayList<Object>::new));
-
 
 
     }
