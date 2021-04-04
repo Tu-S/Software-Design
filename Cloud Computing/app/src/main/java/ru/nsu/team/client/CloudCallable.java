@@ -31,7 +31,9 @@ public class CloudCallable<T,R> implements Callable<List<Object[]>> {
         }
         var res = new LinkedList<Object[]>();
         for (var task : awaitedSubTasks) {
-            res.addAll(Collections.singleton(task.get()));
+            if(task.get()!= null) {
+                res.addAll(Collections.singleton(task.get()));
+            }
         }
         executor.shutdown();
         return res;
