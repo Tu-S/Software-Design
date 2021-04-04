@@ -6,6 +6,7 @@ import ru.nsu.team.packet.CloudNodeResultPacket;
 import ru.nsu.team.tools.Toolkit;
 
 import java.lang.reflect.Method;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -14,6 +15,7 @@ public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResultPack
     private final T data;
     private final UUID uuid;
     private final int methodHashCode;
+    private  Queue<T> res;
 
     public TaskExecutor(final Class<TOperation> operationClass, int methodHashCode,
                         final T data, final UUID uuid) {
@@ -49,6 +51,7 @@ public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResultPack
         }
         System.out.println("Method name " + ex.getName());
         ex.setAccessible(true);
-        return new CloudNodeResultPacket(uuid, (Object[]) ex.invoke(operation, data));
+        var o = (Object[]) ex.invoke(operation, data);
+        return new CloudNodeResultPacket(uuid, o);
     }
 }

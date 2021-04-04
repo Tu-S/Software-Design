@@ -1,5 +1,6 @@
 package ru.nsu.team.node;
 
+import org.checkerframework.framework.qual.PreconditionAnnotation;
 import ru.nsu.team.client.CloudExecutor;
 import ru.nsu.team.packet.CloudNodePacket;
 import ru.nsu.team.packet.CloudNodeResponsePacket;
@@ -90,18 +91,11 @@ public class Node {
 
             }
             while (!commandQueue.isEmpty()) {
-                var req = commandQueue.peek();
+                var req = commandQueue.poll();
 
                 switch (req.command) {
                     case CloudExecutor.COMMAND:
-                        if(curChunk >= res.size() && res.size() > 0){
-                            curChunk = 0;
-                        } else {
-                            break;
-
-                        }
-
-                        req = commandQueue.poll();
+                        commandQueue.addLast(req);
                         System.out.println("curChunk = " + curChunk);
                         var operationClass = Toolkit.Decode(request.input.dataClass, Class.class);
 //                        for (var el : res) {
@@ -116,7 +110,6 @@ public class Node {
                         curChunk++;
                         break;
                     case CloudExecutor.COMMAND_AND_DATA:
-                        req = commandQueue.poll();
                         if (!loaded) {
                             var classInjector = new ClassInjector(Thread.currentThread().getContextClassLoader());
                             classInjector.injectClasses(req.classCodes);

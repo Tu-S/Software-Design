@@ -189,7 +189,7 @@ public class CloudExecutor<T, R> {
         for (var el : result3) {
             list.addAll(Arrays.asList(el));
         }
-
+        exec.shutdown();
         return list.toArray();
     }
 

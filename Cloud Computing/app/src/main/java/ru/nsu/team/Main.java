@@ -48,7 +48,7 @@ public class Main {
         CloudExecutor<Person, Object[]> cloud = new CloudExecutor();
 
         cloud.testCloudMap(list, TestMapOperation::testStaticMethod, 5);
-        //cloud.applyFunction(TestMapOperation::testStaticMethod);
+        cloud.applyFunction(TestMapOperation::testStaticMethod);
         Arrays.stream(cloud.collect()).forEach(p -> System.out.println(((Person) p).age));
 //        var res = CloudExecutor.collect();
 //        for (var e : res) {
