@@ -1,9 +1,10 @@
 package ru.nsu.team.packet;
 
+import java.io.Serializable;
 import java.nio.file.ClosedDirectoryStreamException;
 import java.util.UUID;
 
-public class CloudNodeResultPacket {
+public class CloudNodeResultPacket implements Serializable {
     public UUID uuid;
     public Object[] answer;
 

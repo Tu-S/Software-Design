@@ -45,9 +45,11 @@ public class Main {
             personsExpected[i] = new Person(i * 2, "person static method " + i);
         }
         List<Person> list = Arrays.asList(source);
+        CloudExecutor<Person, Object[]> cloud = new CloudExecutor();
 
-        CloudExecutor.testCloudMap(list, TestMapOperation::testStaticMethod, 5);
-        CloudExecutor.applyFunction(TestMapOperation::testStaticMethod);
+        cloud.testCloudMap(list, TestMapOperation::testStaticMethod, 5);
+        //cloud.applyFunction(TestMapOperation::testStaticMethod);
+        Arrays.stream(cloud.collect()).forEach(p -> System.out.println(((Person) p).age));
 //        var res = CloudExecutor.collect();
 //        for (var e : res) {
 //            System.out.println(((Person) e).age);

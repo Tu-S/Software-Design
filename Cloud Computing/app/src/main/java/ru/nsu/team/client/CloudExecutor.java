@@ -13,20 +13,24 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CloudExecutor {
+public class CloudExecutor<T, R> {
 
     private static String host;
     private static int port;
     public static final int COMMAND = 1488;
     public static final int COMMAND_AND_DATA = 322;
     public static final int COLLECT = 666;
+    public static int executors = 1;
+    private List<LocalCallable<T, R>> subTasks;
+    private ExecutorService exec = Executors.newSingleThreadExecutor();
+    private Collection<T> data;
 
-
-    private CloudExecutor() {
+    public CloudExecutor() {
     }
 
     public static void init(String host, int port) {
@@ -62,7 +66,7 @@ public class CloudExecutor {
 //        return CloudExecutor.serverExchange(request);
 //    }
 
-    public static <T, R> Object[] testDataCommandExecute(T data, SerializableFunction<? super T, ? extends R> mapper)
+    public static <T, R> Object[] testDataCommandExecute(int commandType,T data, SerializableFunction<? super T, ? extends R> mapper)
             throws IOException, ClassNotFoundException {
         var operationClass = LambdaExtractor.extractClass(mapper);
         var method = LambdaExtractor.extractMethod(mapper);
@@ -72,12 +76,11 @@ public class CloudExecutor {
         var inClass = data.getClass();
         System.out.println("inClass = " + inClass.getCanonicalName());
         var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass),
-                Toolkit.Encode(inClass), Toolkit.Encode(data), true, hashCode, COMMAND_AND_DATA);
-        CloudExecutor.serverExchange(request);
-        return null;
+                Toolkit.Encode(inClass), Toolkit.Encode(data), true, hashCode, commandType);
+        return CloudExecutor.serverExchange(request, Object[].class);
     }
 
-    private static void serverExchange(CloudPacket request)
+    private static <TResponse> TResponse serverExchange(CloudPacket request, Class<TResponse> responseClass)
             throws IOException, ClassNotFoundException {
         var socket = new Socket(host, port);
         var outputStream = new DataOutputStream(socket.getOutputStream());
@@ -96,7 +99,7 @@ public class CloudExecutor {
         outputStream.close();
         socket.close();
 
-        return;
+        return Toolkit.Decode(response, responseClass);
     }
 
 //    private static <TResponse> TResponse serverExchange(CloudPacket request, Class<TResponse> responseClass)
@@ -122,52 +125,72 @@ public class CloudExecutor {
 //    }
 
 
-    public static <T, R> Stream<Object> cloudMap(Collection<T> data, SerializableFunction<? super T[], ? extends R> mapper, int executorsCount) throws ExecutionException, InterruptedException {
+//    public static <T, R> Stream<Object> cloudMap(Collection<T> data, SerializableFunction<? super T[], ? extends R> mapper, int executorsCount) throws ExecutionException, InterruptedException {
+//        var chunks = new LinkedList<ArrayList<T>>();
+//        var chunkSize = data.size() / executorsCount + ((data.size() % executorsCount) == 0 ? 0 : 1);
+//        var dataList = new ArrayList<>(data);
+//
+//        for (int i = 0; i < executorsCount; i++) {
+//            chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
+//        }
+//
+//        var subTasks = chunks.stream().map(chunk -> new LocalCallable<T, R>(chunk, mapper)).collect(Collectors.toList());
+//        var task = new CloudCallable<T, R>(subTasks);
+//        var exec = Executors.newSingleThreadExecutor();
+//
+//        var result3 = exec.submit(task).get();
+//        List<Object> list = new ArrayList<>();
+//        for (var el : result3) {
+//            list.addAll(Arrays.asList(el));
+//        }
+//
+//        return list.stream();
+//    }
+
+    public void testCloudMap(Collection<T> data, SerializableFunction<? super T[], ? extends R> mapper, int executorsCount) throws ExecutionException, InterruptedException {
+        this.data = data;
+        executors = executorsCount;
         var chunks = new LinkedList<ArrayList<T>>();
         var chunkSize = data.size() / executorsCount + ((data.size() % executorsCount) == 0 ? 0 : 1);
-        var dataList = new ArrayList<>(data);
+        var dataList = new ArrayList<T>(data);
 
         for (int i = 0; i < executorsCount; i++) {
             chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
         }
 
-        var subTasks = chunks.stream().map(chunk -> new LocalCallable<T, R>(chunk, mapper)).collect(Collectors.toList());
-        var task = new CloudCallable<T, R>(subTasks);
-        var exec = Executors.newSingleThreadExecutor();
+        subTasks = chunks.stream().map(chunk -> new LocalCallable<T, R>(COMMAND_AND_DATA,chunk, mapper)).collect(Collectors.toList());
 
+    }
+
+    public void applyFunction(SerializableFunction<? super T[], ? extends R> mapper)
+            throws IOException, ClassNotFoundException {
+//        var operationClass = LambdaExtractor.extractClass(mapper);
+//        var method = LambdaExtractor.extractMethod(mapper);
+//        var hashCode = method.hashCode();
+//        System.out.println("method = " + method.getName());
+//        System.out.println("operation class = " + operationClass.getCanonicalName());
+//        var request = new CloudPacket(Toolkit.Encode(Object[].class), Toolkit.Encode(operationClass), hashCode, COMMAND);
+//        CloudExecutor.serverExchange(request);
+        var chunks = new LinkedList<ArrayList<T>>();
+        var chunkSize = data.size() / executors + ((data.size() % executors == 0 ? 0 : 1));
+        var dataList = new ArrayList<T>(data);
+
+        for (int i = 0; i < executors; i++) {
+            chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
+        }
+
+        subTasks.addAll(chunks.stream().map(chunk -> new LocalCallable<T, R>(COMMAND,chunk, mapper)).collect(Collectors.toList()));
+    }
+
+    public Object[] collect() throws ExecutionException, InterruptedException {
+        var task = new CloudCallable<T, R>(subTasks);
         var result3 = exec.submit(task).get();
         List<Object> list = new ArrayList<>();
         for (var el : result3) {
             list.addAll(Arrays.asList(el));
         }
-        exec.shutdown();
-        return list.stream();
-    }
 
-    public static <T, R> void testCloudMap(Collection<T> data, SerializableFunction<? super T[], ? extends R> mapper, int executorsCount) throws ExecutionException, InterruptedException {
-        var chunks = new LinkedList<ArrayList<T>>();
-        var chunkSize = data.size() / executorsCount + ((data.size() % executorsCount) == 0 ? 0 : 1);
-        var dataList = new ArrayList<>(data);
-
-        for (int i = 0; i < executorsCount; i++) {
-            chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
-        }
-
-        var subTasks = chunks.stream().map(chunk -> new LocalCallable<T, R>(chunk, mapper)).collect(Collectors.toList());
-        var task = new CloudCallable<T, R>(subTasks);
-        var exec = Executors.newSingleThreadExecutor();
-        exec.submit(task);
-        //var result3 = .get();
-    }
-    public static <T, R> void applyFunction(SerializableFunction<? super T, ? extends R> mapper)
-            throws IOException, ClassNotFoundException {
-        var operationClass = LambdaExtractor.extractClass(mapper);
-        var method = LambdaExtractor.extractMethod(mapper);
-        var hashCode = method.hashCode();
-        System.out.println("method = " + method.getName());
-        System.out.println("operation class = " + operationClass.getCanonicalName());
-        var request = new CloudPacket(Toolkit.Encode(Object[].class), Toolkit.Encode(operationClass), hashCode, COMMAND);
-        CloudExecutor.serverExchange(request);
+        return list.toArray();
     }
 
 
