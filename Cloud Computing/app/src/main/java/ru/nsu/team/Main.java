@@ -49,8 +49,10 @@ public class Main {
 
         //cloud.testCloudMap(list, TestMapOperation::testStaticMethod, 5);
         cloud.loadData(list,5);
-        //cloud.applyFunction(TestMapOperation::testStaticMethod);
-        //Arrays.stream(cloud.collect()).forEach(p -> System.out.println(((Person) p).age));
+        cloud.applyFunction(TestMapOperation::testStaticMethod);
+        cloud.applyFunction(TestMapOperation::testStaticMethod);
+        var res = cloud.collect();
+        Arrays.stream(res).forEach(p -> System.out.println(((Person) p).age));
 //        var res = CloudExecutor.collect();
 //        for (var e : res) {
 //            System.out.println(((Person) e).age);

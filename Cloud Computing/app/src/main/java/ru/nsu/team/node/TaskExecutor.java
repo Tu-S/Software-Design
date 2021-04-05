@@ -15,7 +15,6 @@ public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResultPack
     private final T data;
     private final UUID uuid;
     private final int methodHashCode;
-    private  Queue<T> res;
 
     public TaskExecutor(final Class<TOperation> operationClass, int methodHashCode,
                         final T data, final UUID uuid) {

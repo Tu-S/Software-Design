@@ -45,6 +45,7 @@ public class TaskResultsService implements Runnable {
           System.out.println("Task finished.");
         }
       } catch (InterruptedException e) {
+        System.out.println(e.getMessage());
         break;
       } catch (IOException | ClassNotFoundException e) {
         e.printStackTrace();
