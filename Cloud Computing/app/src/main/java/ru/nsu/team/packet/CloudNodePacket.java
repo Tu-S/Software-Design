@@ -5,12 +5,12 @@ import java.util.UUID;
 
 public class CloudNodePacket implements Serializable {
     public UUID uuid;
-    public CloudPacket input;
+    public CloudPacketSet input;
 
     public CloudNodePacket() {
     }
 
-    public CloudNodePacket(final UUID uuid, final CloudPacket input) {
+    public CloudNodePacket(final UUID uuid, final CloudPacketSet input) {
         this.uuid = uuid;
         this.input = input;
     }

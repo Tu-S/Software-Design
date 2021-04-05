@@ -2,6 +2,7 @@ package ru.nsu.team.server;
 
 import ru.nsu.team.packet.CloudNodePacket;
 import ru.nsu.team.packet.CloudPacket;
+import ru.nsu.team.packet.CloudPacketSet;
 import ru.nsu.team.tools.Toolkit;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class TaskSendingService implements Runnable {
                 }
                 var requestArr = new byte[client.getInputStream().readInt()];
                 client.getInputStream().readFully(requestArr);
-                var request = Toolkit.Decode(requestArr, CloudPacket.class);
+                var request = Toolkit.Decode(requestArr, CloudPacketSet.class);
                 var executionRequest = new CloudNodePacket(UUID.randomUUID(), request);
                 requestArr = Toolkit.Encode(executionRequest);
                 node.getOutputStream().writeInt(requestArr.length);

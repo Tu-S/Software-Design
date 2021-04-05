@@ -24,7 +24,7 @@ public class Node {
         int breakCounter = -1;
         CloudNodePacket request = null;
         boolean loaded = false;
-        ArrayDeque<CloudPacket> commandQueue = new ArrayDeque<>();
+        ArrayDeque<CloudPacketSet> commandQueue = new ArrayDeque<>();
         var socket = new Socket(host, port);
         var inputStream = new DataInputStream(socket.getInputStream());
         var outputStream = new DataOutputStream(socket.getOutputStream());
@@ -38,19 +38,20 @@ public class Node {
                 var requestBuffer = new byte[inputStream.readInt()];
                 inputStream.readFully(requestBuffer);
                 request = Toolkit.Decode(requestBuffer, CloudNodePacket.class);
-
                 switch (request.input.command) {
                     case CloudExecutor.DATA: {
-                        var dataClass = Toolkit.Decode(request.input.dataClass, Class.class);
-                        var data = Toolkit.Decode(request.input.data, dataClass);
-                        res.add((Object[]) data);
-                        var task = new ACK();
-                        var future = executor.submit(task);
-                        dataACK.add(future);
+                        for (var p : request.input.packets) {
+                            var dataClass = Toolkit.Decode(p.dataClass, Class.class);
+                            var data = Toolkit.Decode(p.data, dataClass);
+                            res.add((Object[]) data);
+                            var task = new ACK();
+                            var future = executor.submit(task);
+                            dataACK.add(future);
+                        }
                         break;
                     }
                     case CloudExecutor.COMMAND: {
-                        commandQueue.addLast(request.input);
+                        commandQueue.add(request.input);
 //                        var operationClass = Toolkit.Decode(request.input.dataClass, Class.class);//Toolkit.Decode(request.input.operationClass, Class.class);
 //                        commandQueue.add(operationClass);
 //                        for (var el : res) {
@@ -72,10 +73,7 @@ public class Node {
                 }
                 var req = commandQueue.poll();
                 if (req.command == CloudExecutor.COMMAND) {
-                    var classInjector = new ClassInjector(Thread.currentThread().getContextClassLoader());
-                    classInjector.injectClasses(req.classCodes);
-                    var operationClass = Toolkit.Decode(req.operationClass, Class.class);
-                    var task = new TaskExecutor(operationClass, req.hashCode, res.poll(), request.uuid);
+                    var task = new TaskExecutor(req);
                     var future = executor.submit(task);
                     tasks.add(future);
                 }

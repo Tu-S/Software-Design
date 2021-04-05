@@ -3,6 +3,7 @@ package ru.nsu.team.client;
 import ru.nsu.team.agent.Agent;
 import ru.nsu.team.packet.CloudPacket;
 
+import ru.nsu.team.packet.CloudPacketSet;
 import ru.nsu.team.tools.Toolkit;
 import ru.nsu.team.tools.lambda.SerializableFunction;
 import ru.nsu.team.tools.lambda.LambdaExtractor;
@@ -29,8 +30,10 @@ public class CloudExecutor<T, R> {
     private List<LocalCallable<T, R>> subTasks;
     private ExecutorService exec = Executors.newSingleThreadExecutor();
     private Collection<T> data;
+    private List<SerializableFunction<? super T[], ? extends R>> funcs;
 
     public CloudExecutor() {
+        funcs = new ArrayList<>();
     }
 
     public static void init(String host, int port) {
@@ -66,30 +69,35 @@ public class CloudExecutor<T, R> {
 //        return CloudExecutor.serverExchange(request);
 //    }
 
-    public static <T, R> Object[] testDataCommandExecute(int commandType, T data, SerializableFunction<? super T, ? extends R> mapper)
+    public static <T, R> Object[] testDataCommandExecute(int commandType, T data, List<SerializableFunction<? super T, ? extends R>> mappers)
             throws IOException, ClassNotFoundException {
-        if (mapper != null) {
-            var operationClass = LambdaExtractor.extractClass(mapper);
-            var method = LambdaExtractor.extractMethod(mapper);
-            var hashCode = method.hashCode();
-            System.out.println("method = " + method.getName());
-            System.out.println("operation class = " + operationClass.getCanonicalName());
-            var inClass = data.getClass();
-            System.out.println("inClass = " + inClass.getCanonicalName());
-            var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass),
-                    Toolkit.Encode(inClass), Toolkit.Encode(data), true, hashCode, commandType);
-            return CloudExecutor.serverExchange(request, Object[].class);
+        var packetSet = new CloudPacketSet(commandType);
+        if (mappers != null) {
+            for (var mapper : mappers) {
+                var operationClass = LambdaExtractor.extractClass(mapper);
+                var method = LambdaExtractor.extractMethod(mapper);
+                var hashCode = method.hashCode();
+                System.out.println("method = " + method.getName());
+                System.out.println("operation class = " + operationClass.getCanonicalName());
+                var inClass = data.getClass();
+                System.out.println("inClass = " + inClass.getCanonicalName());
+                var request = new CloudPacket(Agent.loadedClasses, Toolkit.Encode(operationClass),
+                        Toolkit.Encode(inClass), Toolkit.Encode(data), true, hashCode, commandType);
+                packetSet.packets.add(request);
+            }
         } else {
             var inClass = data.getClass();
             System.out.println("inClass = " + inClass.getCanonicalName());
             var request = new CloudPacket(Agent.loadedClasses, null,
                     Toolkit.Encode(inClass), Toolkit.Encode(data), true, -666, commandType);
-            return CloudExecutor.serverExchange(request, Object[].class);
+            packetSet.packets.add(request);
         }
+        return CloudExecutor.serverExchange(packetSet, Object[].class);
 
     }
 
-    private static <TResponse> TResponse serverExchange(CloudPacket request, Class<TResponse> responseClass)
+
+    private static <TResponse> TResponse serverExchange(CloudPacketSet request, Class<TResponse> responseClass)
             throws IOException, ClassNotFoundException {
         var socket = new Socket(host, port);
         var outputStream = new DataOutputStream(socket.getOutputStream());
@@ -188,6 +196,10 @@ public class CloudExecutor<T, R> {
         subTasks.clear();
     }
 
+    public void addFunc(SerializableFunction<? super T[], ? extends R> mapper) {
+        funcs.add(mapper);
+    }
+
     public void applyFunction(SerializableFunction<? super T[], ? extends R> mapper)
             throws IOException, ClassNotFoundException {
 //        var operationClass = LambdaExtractor.extractClass(mapper);
@@ -205,10 +217,24 @@ public class CloudExecutor<T, R> {
             chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
         }
 
-        subTasks.addAll(chunks.stream().map(chunk -> new LocalCallable<T, R>(COMMAND, chunk, mapper)).collect(Collectors.toList()));
+        //subTasks.addAll(chunks.stream().map(chunk -> new LocalCallable<T, R>(COMMAND, chunk, mapper)).collect(Collectors.toList()));
+    }
+
+    private void createTasks() {
+        var chunks = new LinkedList<ArrayList<T>>();
+        var chunkSize = data.size() / executors + ((data.size() % executors) == 0 ? 0 : 1);
+        var dataList = new ArrayList<T>(data);
+
+        for (int i = 0; i < executors; i++) {
+            chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
+        }
+
+        subTasks = chunks.stream().map(chunk -> new LocalCallable<T, R>(COMMAND, chunk, funcs)).collect(Collectors.toList());
+
     }
 
     public Object[] collect() throws ExecutionException, InterruptedException {
+        createTasks();
         var task = new CloudCallable<T, R>(subTasks);
         var result3 = exec.submit(task).get();
         List<Object> list = new ArrayList<>();
@@ -225,7 +251,7 @@ public class CloudExecutor<T, R> {
         var result3 = exec.submit(task).get();
 
         List<Object> list = new ArrayList<>();
-        for(var el : result3){
+        for (var el : result3) {
             list.addAll(Arrays.asList(el));
         }
     }
