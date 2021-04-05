@@ -183,17 +183,17 @@ public class CloudExecutor<T, R> {
     public void loadData(Collection<T> data, int executorsCount) throws ExecutionException, InterruptedException {
         this.data = data;
         executors = executorsCount;
-        var chunks = new LinkedList<ArrayList<T>>();
-        var chunkSize = data.size() / executorsCount + ((data.size() % executorsCount) == 0 ? 0 : 1);
-        var dataList = new ArrayList<T>(data);
-
-        for (int i = 0; i < executorsCount; i++) {
-            chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
-        }
-
-        subTasks = chunks.stream().map(chunk -> new LocalCallable<T, R>(DATA, chunk, null)).collect(Collectors.toList());
-        collectACK();
-        subTasks.clear();
+//        var chunks = new LinkedList<ArrayList<T>>();
+//        var chunkSize = data.size() / executorsCount + ((data.size() % executorsCount) == 0 ? 0 : 1);
+//        var dataList = new ArrayList<T>(data);
+//
+//        for (int i = 0; i < executorsCount; i++) {
+//            chunks.add(new ArrayList<T>(dataList.subList(i * chunkSize, (i + 1) * chunkSize)));
+//        }
+//
+//        subTasks = chunks.stream().map(chunk -> new LocalCallable<T, R>(DATA, chunk, null)).collect(Collectors.toList());
+//        collectACK();
+//        subTasks.clear();
     }
 
     public void addFunc(SerializableFunction<? super T[], ? extends R> mapper) {
@@ -238,8 +238,8 @@ public class CloudExecutor<T, R> {
         var task = new CloudCallable<T, R>(subTasks);
         var result3 = exec.submit(task).get();
         List<Object> list = new ArrayList<>();
-        for (int i = executors - 1; i < result3.size(); i++) {
-            list.addAll(Arrays.asList(result3.get(i)));
+        for (var el : result3) {
+            list.addAll(Arrays.asList(el));
 
         }
         exec.shutdown();
