@@ -20,7 +20,7 @@ public class LocalCallable<T, R> implements Callable<Object[]> {
 
     @Override
     public Object[] call() throws Exception {
-        return CloudExecutor.testDataCommandExecute(commandType,data, mappers);
+        return CloudExecutor.dataCommandExecute(commandType,data, mappers);
     }
 }
 

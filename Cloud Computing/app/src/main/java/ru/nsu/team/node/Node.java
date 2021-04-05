@@ -1,7 +1,5 @@
 package ru.nsu.team.node;
 
-import org.checkerframework.framework.qual.PreconditionAnnotation;
-import ru.nsu.team.client.CloudExecutor;
 import ru.nsu.team.packet.*;
 import ru.nsu.team.tools.Toolkit;
 
@@ -21,7 +19,7 @@ public class Node {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, ExecutionException, InterruptedException {
         Queue<Object[]> res = new ArrayDeque<>();
-        CloudNodePacket request = null;
+        CloudNodePacket request;
         var socket = new Socket(host, port);
         var inputStream = new DataInputStream(socket.getInputStream());
         var outputStream = new DataOutputStream(socket.getOutputStream());
