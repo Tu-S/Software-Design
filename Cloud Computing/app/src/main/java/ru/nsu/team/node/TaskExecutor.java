@@ -10,6 +10,7 @@ import ru.nsu.team.tools.KeyValuePair;
 import ru.nsu.team.tools.Toolkit;
 
 import javax.tools.Tool;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResultPacket> {
+public class TaskExecutor implements Callable<CloudNodeResultPacket> {
     //    //private final Class<TOperation> operationClass;
 //    private T data;
 //    private Object[] res;
@@ -55,26 +56,59 @@ public class TaskExecutor<T, TOperation> implements Callable<CloudNodeResultPack
         var data = Toolkit.Decode(pack.data, dataClass);
         var classInjector = new ClassInjector(Thread.currentThread().getContextClassLoader());
         classInjector.injectClasses(pack.classCodes);
-        Object[] res = (Object[]) data;
         for (var packet : set.packets) {
 
-            var operationClass = Toolkit.Decode(packet.operationClass, Class.class);
+            var operationClass = Toolkit.Decode(pack.operationClass, Class.class);
+            data = new Executor(operationClass, packet.hashCode, data, null).call();
+
+//            var operationClass = Toolkit.Decode(packet.operationClass, Class.class);
+//            var operation = (TOperation) operationClass.getDeclaredConstructor().newInstance();
+//            Method ex = null;
+//            for (Method m : operationClass.getDeclaredMethods()) {
+//                if (m.hashCode() == packet.hashCode) {
+//                    ex = m;
+//                    break;
+//                }
+//            }
+//            System.out.println("Method name " + ex.getName());
+//            ex.setAccessible(true);
+//            res = new Object[] {ex.invoke(operation, res)};
+
+        }
+        return new CloudNodeResultPacket(null, (Object[]) data);
+
+
+    }
+
+    class Executor<T, TOperation> {
+
+        private final Class<TOperation> operationClass;
+        private final T data;
+        private final UUID uuid;
+        private final int methodHashCode;
+
+        public Executor(final Class<TOperation> operationClass, int methodHashCode,
+                        final T data, final UUID uuid) {
+            this.operationClass = operationClass;
+            this.data = data;
+            this.uuid = uuid;
+            this.methodHashCode = methodHashCode;
+        }
+
+        public Object call() throws Exception {
             var operation = (TOperation) operationClass.getDeclaredConstructor().newInstance();
             Method ex = null;
             for (Method m : operationClass.getDeclaredMethods()) {
-                if (m.hashCode() == packet.hashCode) {
+                if (m.hashCode() == this.methodHashCode) {
                     ex = m;
                     break;
                 }
             }
             System.out.println("Method name " + ex.getName());
             ex.setAccessible(true);
-            res = (Object[]) ex.invoke(operation, res);
-
+            var o = ex.invoke(operation, data);
+            return o;
         }
-        return new CloudNodeResultPacket(null, (Object[]) res);
-
 
     }
-
 }

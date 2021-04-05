@@ -23,6 +23,16 @@ public class TestMapOperation {
         }
         return  input;
     }
+    public static Object[] test2StaticMethod(Object[] input) {
+        for (Object t : input) {
+            var p = (Person)t;
+            var old = p.age;
+            p.age = p.age + 1000;
+            p.name = p.name.replaceAll("name", "static method");
+            System.out.println("old = " + old + " new = " + p.age);
+        }
+        return  input;
+    }
 
     public Person[] nonStaticMethod(Person[] input) {
         for (Person p : input) {

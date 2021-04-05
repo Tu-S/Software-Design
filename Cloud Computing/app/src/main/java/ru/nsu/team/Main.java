@@ -51,6 +51,7 @@ public class Main {
         cloud.loadData(list,5);
         cloud.addFunc(TestMapOperation::testStaticMethod);
         cloud.addFunc(TestMapOperation::testStaticMethod);
+        cloud.addFunc(TestMapOperation::test2StaticMethod);
         //cloud.applyFunction(TestMapOperation::testStaticMethod);
         //cloud.applyFunction(TestMapOperation::testStaticMethod);
         var res = cloud.collect();
